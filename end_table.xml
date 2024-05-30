@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"> <!-- 반투명 배경 -->
+
+    <!-- 결과창 제목 -->
+    <TextView
+        android:id="@+id/end_title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:text="게임 종료"
+        android:textColor="@android:color/white"
+        android:textSize="50sp" />
+
+    <!-- 결과창 점수 -->
+    <TextView
+        android:id="@+id/end_point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/end_title_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:text="점수값"
+        android:textColor="@android:color/white"
+        android:textSize="60sp" />
+
+    <!-- 결과창 배경 -->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="330dp"
+        android:layout_height="600dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:src="@android:color/black"
+        android:alpha="0.4"/> <!-- 여기에 이미지 리소스를 넣으세요 -->
+
+    <!-- 돌아가기 버튼 -->
+    <Button
+        android:id="@+id/back_to_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="500dp"
+        android:text="처음으로" />
+
+</RelativeLayout>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cre_acc_page"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:alpha="0.5"
+        app:srcCompat="@drawable/pmc1"
+        tools:layout_editor_absoluteX="22dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <EditText
+        android:id="@+id/spc_cre_one_word"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="(한마디 기입)"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="@+id/spc_cre_hobby"
+        app:layout_constraintTop_toBottomOf="@+id/spc_cre_hobby" />
+
+    <EditText
+        android:id="@+id/spc_cre_hobby"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="(취미 기입)"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="@+id/spc_cre_school"
+        app:layout_constraintTop_toBottomOf="@+id/spc_cre_school" />
+
+    <EditText
+        android:id="@+id/spc_cre_school"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="(소속 기입)"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="@+id/spc_cre_name"
+        app:layout_constraintTop_toBottomOf="@+id/spc_cre_name" />
+
+    <EditText
+        android:id="@+id/spc_cre_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="(이름 기입)"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="@+id/spc_cre_pw"
+        app:layout_constraintTop_toBottomOf="@+id/spc_cre_pw" />
+
+    <EditText
+        android:id="@+id/spc_cre_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="(사용할 비밀번호)"
+        android:inputType="textPassword"
+        app:layout_constraintStart_toStartOf="@+id/spc_cre_id"
+        app:layout_constraintTop_toBottomOf="@+id/spc_cre_id" />
+
+    <EditText
+        android:id="@+id/spc_cre_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="120dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="(사용할 아이디)"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/cre_title_hobby"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="취미"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@id/spc_cre_hobby"
+        app:layout_constraintEnd_toEndOf="@id/cre_title_school" />
+
+    <TextView
+        android:id="@+id/cre_title_school"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="소속"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@id/spc_cre_school"
+        app:layout_constraintEnd_toEndOf="@id/cre_title_name" />
+
+    <TextView
+        android:id="@+id/cre_title_one_word"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="한마디"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@id/spc_cre_one_word"
+        app:layout_constraintEnd_toEndOf="@id/cre_title_hobby" />
+
+    <TextView
+        android:id="@+id/cre_title_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="이름"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@id/spc_cre_name"
+        app:layout_constraintEnd_toEndOf="@id/cre_title_pw" />
+
+    <TextView
+        android:id="@+id/cre_title_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="비밀번호"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@id/spc_cre_pw"
+        app:layout_constraintEnd_toEndOf="@id/cre_title_id" />
+
+    <TextView
+        android:id="@+id/cre_title_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="230dp"
+        android:text="아이디"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@id/spc_cre_id"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/bt_backer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="180dp"
+        android:layout_marginTop="60dp"
+        android:text="뒤로가기"
+        android:textSize="24sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spc_cre_one_word" />
+
+    <Button
+        android:id="@+id/bt_roster"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginRight="180dp"
+        android:text="회원가입"
+        android:textSize="24sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spc_cre_one_word" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

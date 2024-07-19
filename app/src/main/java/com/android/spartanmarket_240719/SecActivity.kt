@@ -1,7 +1,9 @@
 package com.android.spartanmarket_240719
 
 import android.content.Intent
+import android.media.Image
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -25,6 +27,10 @@ class SecActivity : AppCompatActivity() {
 
         val PresentItem:SpartanItem? = intent.getParcelableExtra<SpartanItem>("SelectItem")
 
+        val btn_back:ImageView = secondScreenBinding.secItemBackArrowImageView
+        btn_back.setOnClickListener {
+            finish()
+        }
 
         PresentItem?.let{
             secondScreenBinding.apply{

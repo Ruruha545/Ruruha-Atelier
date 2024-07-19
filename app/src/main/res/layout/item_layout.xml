@@ -4,7 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/spartan_item_recyler_container"
     android:layout_width="match_parent"
-    android:layout_height="130dp">
+    android:layout_height="133dp">
+
+    <View
+        android:id="@+id/item_border_View"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginBottom="1dp"
+        android:alpha="0.3"
+        android:background="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/item_comment_textView"
@@ -70,7 +81,7 @@
 
     <TextView
         android:id="@+id/item_title_textView"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:ellipsize="end"
@@ -86,10 +97,10 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
         android:background="@drawable/shape_img_round"
-        android:scaleType="centerCrop"
         android:clipToOutline="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/item_sample1" />

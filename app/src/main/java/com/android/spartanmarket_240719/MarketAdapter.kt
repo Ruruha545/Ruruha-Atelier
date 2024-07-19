@@ -19,6 +19,8 @@ class MarketAdapter(val Pro_List: List<SpartanItem>):
                 binding.itemTitleTextView.text = item.title
                 binding.itemLocationTextView.text = item.location
                 binding.itemPriceTextView.text = "${String.format("%,d", item.price)} 원"
+                binding.itemCommentTextView.text = item.comment_n
+                binding.itemHeartTextView.text = item.heart_n
 
                 binding.root.setOnClickListener{
                     listClick?.invoke(adapterPosition)

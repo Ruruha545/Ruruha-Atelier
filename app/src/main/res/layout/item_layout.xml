@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/spartan_item_recyler_container"
+    android:layout_width="match_parent"
+    android:layout_height="130dp">
+
+    <TextView
+        android:id="@+id/item_comment_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:text="숫자"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@+id/item_comment_imageView"
+        app:layout_constraintStart_toEndOf="@+id/item_comment_imageView"
+        app:layout_constraintTop_toTopOf="@+id/item_comment_imageView" />
+
+    <TextView
+        android:id="@+id/item_heart_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:text="숫자"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@+id/item_heart_imageView"
+        app:layout_constraintStart_toEndOf="@+id/item_heart_imageView"
+        app:layout_constraintTop_toTopOf="@+id/item_heart_imageView" />
+
+    <ImageView
+        android:id="@+id/item_heart_imageView"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginEnd="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/item_imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/icon_heart" />
+
+    <ImageView
+        android:id="@+id/item_comment_imageView"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="50dp"
+        app:layout_constraintBottom_toBottomOf="@+id/item_imageView"
+        app:layout_constraintEnd_toEndOf="@+id/item_heart_imageView"
+        app:srcCompat="@drawable/icon_chat" />
+
+    <TextView
+        android:id="@+id/item_price_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="가격 적는 곳"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/item_title_textView"
+        app:layout_constraintTop_toBottomOf="@+id/item_location_textView" />
+
+    <TextView
+        android:id="@+id/item_location_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:alpha="0.7"
+        android:text="위치주소 적는 곳"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/item_title_textView"
+        app:layout_constraintTop_toBottomOf="@+id/item_title_textView" />
+
+    <TextView
+        android:id="@+id/item_title_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="제목 적는 곳"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/item_imageView"
+        app:layout_constraintTop_toTopOf="@+id/item_imageView" />
+
+    <ImageView
+        android:id="@+id/item_imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="15dp"
+        android:background="@drawable/shape_img_round"
+        android:scaleType="centerCrop"
+        android:clipToOutline="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/item_sample1" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

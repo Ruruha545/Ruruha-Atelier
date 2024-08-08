@@ -23,6 +23,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // 뷰 바인딩 초기화 작업
+        bindingActMain = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(bindingActMain.root)
+
+        enableEdgeToEdge()
+
         // 프래그먼트 매니저, 프래그먼트 트랜색션 생성
         val actFragManager: FragmentManager = supportFragmentManager
         val actFragTransaction: FragmentTransaction = actFragManager.beginTransaction()
@@ -36,9 +42,6 @@ class MainActivity : AppCompatActivity() {
         // 트랜색션 커밋
         actFragTransaction.commit()
 
-
-        enableEdgeToEdge()
-        setContentView(bindingActMain.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)

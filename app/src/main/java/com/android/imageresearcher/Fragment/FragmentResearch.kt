@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.imageresearcher.Adapter.ImageResearchAdapter
+import com.android.imageresearcher.DataClass.Document
 import com.android.imageresearcher.DataClass.KakaoResponse
 import com.android.imageresearcher.DataClass.ResponseDocuments
 import com.android.imageresearcher.InterfaceService.APIInterface
@@ -29,19 +31,20 @@ class FragmentResearch: Fragment() {
     // 뷰 바인딩용 객체 생성
     private lateinit var ResearchBind : FragmentResearchBinding
 
-    // 검색바, 검색 키워드 객체 생성
-    private val MyInputBar: SearchView = ResearchBind.researchContainerSearchview
+    // 검색 키워드 객체 생성
     private var MyKeyword: String = ""
 
     // 검색바 작동용 로직
     private fun searching(){
         // 검색바 텍스트 리스너 설정
-        MyInputBar.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+        ResearchBind.researchContainerSearchview.setOnQueryTextListener(
+            object: SearchView.OnQueryTextListener{
 
             // 검색어 인식, 처리 로직(검색버튼 클릭 시)
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if(query != null){
                     MyKeyword = query
+                    imaging(MyKeyword)
                 }
                 return false
             }
@@ -84,8 +87,19 @@ class FragmentResearch: Fragment() {
                     // 해당 데이터의 필요한 부분을 분리하여 별도의 객체로 생성
                     var MyResList: ResponseDocuments? = MyResSuc?.KakaoDocuments
 
+                    // 어댑터 전달에 앞서 신규 객체 생성 및 내용 복사
+                    val MyNewList: MutableList<Document> = mutableListOf()
+                    MyResList?.DocumentsList?.forEach { ele -> MyNewList.add(ele) }
+
+                    // 검색결과 처리용 어댑터 객체 생성
+                    val MyImageAdapter: ImageResearchAdapter = ImageResearchAdapter(MyNewList)
+                    ResearchBind.researchRectclerviewItemlist.adapter = MyImageAdapter
+                    ResearchBind.researchRectclerviewItemlist.layoutManager =
+                        LinearLayoutManager(context)
+
                 } else {
                     Log.d("이미지 검색창", "서버_정상, 응답_실패")
+                    failing(requireContext(), "서버의 응답 실패")
                 }
             }
 
@@ -119,6 +133,7 @@ class FragmentResearch: Fragment() {
 
         // 검색어 작동 구문 추가
         searching()
+
 
         return ResearchBind.root
     }
@@ -154,6 +169,4 @@ class FragmentResearch: Fragment() {
     override fun onDestroy() {
         super.onDestroy()
     }
-
-
 }

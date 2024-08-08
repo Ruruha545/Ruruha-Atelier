@@ -13,12 +13,12 @@ class ImageResearchAdapter(val ImgList: MutableList<Document>):
 
         // 뷰홀더 클래스 생성
         class Container(val itemBinding: PartImageItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
-            // (체크)받아온 아이템을 넣어라 !!
+            // 받아온 아이템을 넣어라 !!
             fun matching(item: Document){
 
-                itemBinding.partResearchimageImageview.setImageResource()
-                itemBinding.partResearchimagetitleTextview.setText()
-                itemBinding.partResearchimagedateTextview.setText()
+                itemBinding.partResearchimageImageview.setImageResource(item.thumbnail_url.toInt())
+                itemBinding.partResearchimagetitleTextview.setText(item.display_sitename)
+                itemBinding.partResearchimagedateTextview.setText(item.datetime.toString())
             }
         }
 

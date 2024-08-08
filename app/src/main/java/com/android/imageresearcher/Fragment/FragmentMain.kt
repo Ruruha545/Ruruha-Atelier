@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.android.imageresearcher.Adapter.ViewpagerAdapter
+import com.android.imageresearcher.databinding.ActivityMainBinding
 import com.android.imageresearcher.databinding.FragmentMainBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -31,6 +32,8 @@ class FragmentMain: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        // 뷰 바인딩 초기화 작업
+        fragMainBinding = FragmentMainBinding.inflate(layoutInflater)
         return fragMainBinding.root
     }
 
@@ -49,10 +52,6 @@ class FragmentMain: Fragment() {
                 else -> ""
             }
         }.attach()
-
-
-
-
 
     }
 }

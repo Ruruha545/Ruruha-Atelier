@@ -15,10 +15,14 @@ object APIClient {
     const val Auth_Key:String = "KakaoAk 9de08003677f3ae189c5a83ad0ef2343"
 
     // Retrofit 객체 생성
+    // baseURL() : 모든 API 요청의 기본 URL 설정
+    // addConverterFactory() : 데이터(← 서버) 변환
     val MyRetrofit: Retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
+    val MyRequest:APIInterface = MyRetrofit.create(APIInterface::class.java)
 
 
 //    // 요청을 보낼 클라이언트 객체 생성

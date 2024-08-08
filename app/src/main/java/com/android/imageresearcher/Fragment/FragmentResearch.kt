@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.android.imageresearcher.Adapter.ImageResearchAdapter
 import com.android.imageresearcher.DataClass.KakaoResponse
+import com.android.imageresearcher.DataClass.ResponseDocuments
 import com.android.imageresearcher.InterfaceService.APIInterface
 import com.android.imageresearcher.Object.APIClient
 import com.android.imageresearcher.databinding.FragmentResearchBinding
@@ -62,8 +63,8 @@ class FragmentResearch: Fragment() {
         // 레트로핏 인터페이스 객체 생성
         val MyRetroAPI:APIInterface = APIClient.MyRetrofit.create(APIInterface::class.java)
 
-        // 레트로핏 요청 비동기 처리 로직
-        MyRetroAPI.RequestImage(
+        // 서버로부터 수신된 데이터용 객체 생성
+        var MyResult:Call<KakaoResponse> = MyRetroAPI.RequestImage(
             apiKey = APIClient.Auth_Key,
             query = Target,
             sort = "accuracy",
@@ -71,19 +72,25 @@ class FragmentResearch: Fragment() {
             size = 40
         )
 
-
-        MyRetroAPI.enqueue(object : Callback<MutableList<KakaoResponse>> {
+        MyResult.enqueue(object : Callback<KakaoResponse> {
             // 응답이 정상일 때 처리 로직
-            override fun onResponse(call: Call<MutableList<KakaoResponse>>, response: Response<MutableList<KakaoResponse>>) {
+            override fun onResponse(call: Call<KakaoResponse>, response: Response<KakaoResponse>) {
                 if (response.isSuccessful) {
                     Log.d("이미지 검색창", "서버_정상, 응답_성공")
+
+                    // 서버로부터 수신받은 데이터 객체 생성
+                    val MyResSuc:KakaoResponse? = response.body()
+
+                    // 해당 데이터의 필요한 부분을 분리하여 별도의 객체로 생성
+                    var MyResList: ResponseDocuments? = MyResSuc?.KakaoDocuments
+
                 } else {
                     Log.d("이미지 검색창", "서버_정상, 응답_실패")
                 }
             }
 
             // 응답이 비정상일 때 처리 로직
-            override fun onFailure(call: Call<MutableList<KakaoResponse>>, t: Throwable) {
+            override fun onFailure(call: Call<KakaoResponse>, t: Throwable) {
                 Log.d("이미지 검색창", "서버_비정상")
             }
         })

@@ -3,6 +3,7 @@ package com.android.imageresearcher.DataClass
 import com.google.gson.annotations.SerializedName
 import java.time.ZonedDateTime
 
+// 송신용 데이터 모델
 data class KakaoCall(
     @SerializedName("header")
     val Authorization: String,
@@ -14,6 +15,7 @@ data class KakaoCall(
     val size: Int
 )
 
+// 수신용 데이터 모델
 data class KakaoResponse(
     @SerializedName("meta")
     val KakaoMeta: ResponseMeta,

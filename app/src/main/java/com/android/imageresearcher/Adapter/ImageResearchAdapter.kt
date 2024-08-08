@@ -15,6 +15,7 @@ class ImageResearchAdapter(val ImgList: MutableList<Document>):
         class Container(val itemBinding: PartImageItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
             // (체크)받아온 아이템을 넣어라 !!
             fun matching(item: Document){
+
                 itemBinding.partResearchimageImageview.setImageResource()
                 itemBinding.partResearchimagetitleTextview.setText()
                 itemBinding.partResearchimagedateTextview.setText()
@@ -27,22 +28,17 @@ class ImageResearchAdapter(val ImgList: MutableList<Document>):
         val newHolder:PartImageItemBinding = PartImageItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         return ImageResearchAdapter.Container(newHolder)
-
-        TODO("Not yet implemented")
     }
 
     // 뷰홀더 전체 길이 계산 로직
     override fun getItemCount(): Int {
 
         return ImgList.size
-        TODO("Not yet implemented")
     }
 
     // 뷰홀더 데이터 매칭용 로직
     override fun onBindViewHolder(holder: ImageResearchAdapter.Container, position: Int) {
 
         holder.matching(ImgList[position])
-
-        TODO("Not yet implemented")
     }
 }

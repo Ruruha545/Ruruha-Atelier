@@ -3,6 +3,17 @@ package com.android.imageresearcher.DataClass
 import com.google.gson.annotations.SerializedName
 import java.time.ZonedDateTime
 
+data class KakaoCall(
+    @SerializedName("header")
+    val Authorization: String,
+
+    @SerializedName("query parameter")
+    val query: String,
+    val sort: String,
+    val page: Int,
+    val size: Int
+)
+
 data class KakaoResponse(
     @SerializedName("meta")
     val KakaoMeta: ResponseMeta,

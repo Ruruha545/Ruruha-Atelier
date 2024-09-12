@@ -26,6 +26,13 @@ android {
             )
         }
     }
+
+    // 뷰 바인딩, 데이터 바인딩 활성화
+    buildFeatures{
+        viewBinding = true
+        dataBinding = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8

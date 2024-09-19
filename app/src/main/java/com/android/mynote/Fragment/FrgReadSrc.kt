@@ -14,15 +14,19 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import com.android.mynote.R
 import com.android.mynote.databinding.FrgReadBinding
+import com.android.mynote.databinding.FrgWriteBinding
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
 
 class FrgReadSrc : Fragment() {
 
-    // 뷰 바인딩용 객체 추가(소스 : frg_read.xml)
+    // 뷰 바인딩용 객체 추가(소스 : frg_read.xml, frg_write.xml)
     lateinit var bindingRead : FrgReadBinding
+    lateinit var bindingWrite : FrgWriteBinding
 
     // 호스트 액티비티의 컨텍스트를 상속받기 위한 객체화
     lateinit var readContext: Context
@@ -117,6 +121,29 @@ class FrgReadSrc : Fragment() {
     // 이상 파일 열람용 방법 2번
 
 
+    // 작성용 프래그먼트 호출 및 데이터 전달용 코드
+    private fun startFrgWithTXT(){
+
+        // 텍스트 뷰에 전시된 텍스트를 불러옴
+        val passText: String = dispView.text.toString()
+
+        // 상태 전달용 번들 객체화
+        val passbundle: Bundle = Bundle()
+        passbundle.putString("txtbox", passText)
+
+        // 작성용 프래그먼트 객체화 및 번들 전달
+        val newFragment: Fragment = FrgWriteSrc()
+        newFragment.arguments = passbundle
+
+        // 프래그먼트 트랜잭션 작업 로직
+        parentFragmentManager.beginTransaction().apply{
+            replace(R.id.container_fragment, newFragment)
+            addToBackStack(null)
+            commit()
+        }
+    }
+
+
 
 
     // 프래그먼트 연결 시 호출(1회)
@@ -155,8 +182,13 @@ class FrgReadSrc : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // 파일 열람용 버튼 동작 로직
+        bindingRead.btnLoadfile.setOnClickListener {
+            pickTXT.launch("text/plain")
+        }
+
+        // 모드 변경용 버튼 동작 로직
         bindingRead.btnChgmode.setOnClickListener {
-            pickTXT.launch("text")
+            startFrgWithTXT()
         }
     }
 

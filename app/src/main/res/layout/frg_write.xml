@@ -4,17 +4,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/editTextText"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/frg_write_btn_menu"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:clickable="true"
+        android:scaleType="centerInside"
+        app:backgroundTint="@color/white"
+        app:elevation="12dp"
+        app:fabCustomSize="44dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/frg_write_text_title"
+        app:srcCompat="@drawable/upside_menu_none" />
+
+    <TextView
+        android:id="@+id/frg_write_text_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="60dp"
+        android:background="#BB3842"
+        android:gravity="center_vertical"
+        android:paddingStart="20dp"
+        android:text=""
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/frg_write_edit_main"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:ems="10"
         android:enabled="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:gravity="top"
         android:inputType="textMultiLine"
+        android:padding="20dp"
         android:scrollbars="vertical"
-        android:text="Name" />
+        android:text=""
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/frg_write_text_title" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

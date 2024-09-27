@@ -1,15 +1,20 @@
 package com.android.mynote.Fragment
 
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
+import android.renderscript.ScriptGroup.Input
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -19,6 +24,8 @@ import androidx.fragment.app.FragmentTransaction
 import com.android.mynote.R
 import com.android.mynote.databinding.FrgReadBinding
 import com.android.mynote.databinding.FrgWriteBinding
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -33,57 +40,90 @@ class FrgReadSrc : Fragment() {
     lateinit var readContext: Context
 
     // 프래그먼트 선택 TXT 파일의 Uri 정보 객체 추가
-    lateinit var readUri: Uri
+    private var readUri: Uri? = null
 
     // 출력용 텍스트 뷰 객체화(지연)
     private lateinit var dispView : TextView
 
-    // 이하 파일 열람용 방법 1번
-    // SAF 활용, 파일 선택기 호출용 코드
-    private val pickTXT: ActivityResultLauncher<String> =
-        registerForActivityResult(
-            ActivityResultContracts.GetContent()
-        ){
-                tgtUri: Uri? ->
-            tgtUri?.let{
-                val tgtText: String = readerTXT(it)
-                dispView = bindingRead.textView
-                dispView.text = tgtText
+    // 팝업 메뉴 객체화(지연)
+    private lateinit var fltActBtn: FloatingActionButton
+    private lateinit var popRead : PopupMenu
 
-                // 선택된 TXT파일 Uri정보 객체화
-                readUri = tgtUri
+    // 이하 파일 로드용 코드(SAF 활용)
+    // 1) 파일 선택용 메서드
+    private fun openTXT(){
+        val intentRead: Intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply{
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "text/plain"
+        }
+        loadTXTLauncher.launch(intentRead)
+    }
+
+    // 2) 파일 선택 동작용 액티비티 런쳐 객체화
+    private val loadTXTLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+                result ->
+            if(result.resultCode == Activity.RESULT_OK && result.data != null){
+                val tgtUri: Uri? = result.data?.data
+                tgtUri?.let{
+                    readUri = it
+                    readTXT(it)
+                }
+            }
+            else{
+                Toast.makeText(requireContext(), "파일 미선택 상태", Toast.LENGTH_SHORT).show()
+            }
+        }
+    // 이상 파일 로드용 코드(SAF 활용)
+
+    // 파일명 추출 메서드
+    private fun getTXTName(tgtUri: Uri): String?{
+        // 반환값(파일명), 추적자 정의
+        var fileName: String? = null
+        val pointer: Cursor? = requireContext().contentResolver
+            .query(tgtUri, null, null, null, null)
+
+        // 추적자 동작
+        pointer?.use{
+            if(it.moveToFirst()){
+                val nameId: Int = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if(nameId >= 0){
+                    fileName = it.getString(nameId)
+                }
             }
         }
 
-    // 파일 선택기 내부 동작용 코드
-    private fun readerTXT(nowUriR: Uri) : String {
+        return fileName
+    }
 
-        // 열람용 스트링빌더 객체화
-        val readStringBuilder: StringBuilder = StringBuilder()
-
-        // 파일 출력용 로직
+    // 파일 출력용 메서드
+    private fun readTXT(tgtUri: Uri){
+        // 파일 출력 성공용 로직
         try{
-            val inpStrRead: InputStream? = requireContext().contentResolver
-                .openInputStream(nowUriR)
-            val buffReaderRead: BufferedReader = BufferedReader(InputStreamReader(inpStrRead))
+            val newStream: InputStream? = requireContext().contentResolver.openInputStream(tgtUri)
+            val readBuf: BufferedReader = BufferedReader(InputStreamReader(newStream))
+            val cargoText: String = readBuf.use{ it.readText() }
 
-            var textLineRead: String?
-            while(buffReaderRead.readLine().also { textLineRead = it } != null){
-                readStringBuilder.append(textLineRead).append("\n")
-            }
+            // 상태 표시용 이미지, 텍스트 비활성화, 메인 텍스트 활성화
+            bindingRead.frgReadImgNone.visibility = View.GONE
+            bindingRead.frgReadTextNone.visibility = View.GONE
 
-            buffReaderRead.close()
+            dispView.visibility = View.VISIBLE
+
+            // 읽어온 텍스트 파일, 파일명 화면 전시
+            dispView.text = cargoText
+            bindingRead.frgReadTextTitle.text = getTXTName(tgtUri)
+
+            readBuf.close()
         }
 
-        // 예외처리 로직
-        catch(e: Exception){
-            Log.e("FrgReadSrc", "파일 선택기 1번 동작 간 발생")
-            Toast.makeText(requireContext(), "텍스트 방법 1번 에러 발생",
+        // 파일 출력 실패용 로직
+        catch (e: Exception){
+            Log.e("FrgReadSrc", "readTXT 동작 간 에러 발생")
+            Toast.makeText(requireContext(), "readTXT 동작 간 에러 발생",
                 Toast.LENGTH_SHORT).show()
         }
-        return readStringBuilder.toString()
     }
-    // 이상 파일 열람용 방법 1번
 
     // 작성용 프래그먼트 호출 및 데이터 전달용 코드
     private fun startFrgWithTXT(){
@@ -110,6 +150,8 @@ class FrgReadSrc : Fragment() {
 
         // 호스트 액티비티의 컨텍스트를 상속받는 로직
         readContext = context
+
+        Log.e("onAttach", "호출기 -4번")
     }
 
     // 프래그먼트 생성 시 호출(1회)
@@ -119,6 +161,9 @@ class FrgReadSrc : Fragment() {
         // "Bundle"은 "키-값" 쌍으로 데이터를 저장하는 객체
         // 프래그먼트의 상태를 저장하고, 복원하는데 사용됨
         //
+        Log.e("onCreate", "호출기 -3번")
+
+
     }
 
     // 프래그먼트 UI 생성 시 호출(1회)
@@ -131,8 +176,22 @@ class FrgReadSrc : Fragment() {
         // 뷰 바인딩 객체화 로직
         bindingRead = FrgReadBinding.inflate(layoutInflater)
 
+        // 플로팅 액션 버튼 객체화 로직
+        fltActBtn = bindingRead.frgReadBtnMenu
+
+        // 전시용 텍스트 뷰 객체화 로직
+        dispView = bindingRead.frgReadTextMain
+
+        // 수신한 번들 객체화
+        arguments?.let{
+            readUri = it.getParcelable("txtbox")!!
+        }
+
+        Log.e("onCreateView", "호출기 -2번")
+
         // 프래그먼트용 레이아웃 링크 로직
         return bindingRead.root
+
     }
 
     // 프래그먼트 UI 최신화 시 호출(반복)
@@ -140,106 +199,117 @@ class FrgReadSrc : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // 텍스트 뷰 속성 변경용 로직
-        bindingRead.textView.movementMethod = ScrollingMovementMethod()
+        bindingRead.frgReadTextMain.movementMethod = ScrollingMovementMethod()
 
-        // 파일 열람용 버튼 동작 로직
-        bindingRead.btnLoadfile.setOnClickListener {
-            pickTXT.launch("text/plain")
+        // 번들 수신여부에 따른 이벤트 처리 로직
+        if(readUri != null){
+            // 상태 표시용 이미지, 텍스트 비활성화
+            bindingRead.frgReadImgNone.visibility = View.GONE
+            bindingRead.frgReadTextNone.visibility = View.GONE
+
+            dispView.visibility = View.VISIBLE
+
+            // 파일 전시용 메서드 동작
+            readTXT(readUri!!)
+        }
+        else{
+            // 상태 표시용 이미지, 텍스트 활성화, 메인 텍스트 비활성화
+            bindingRead.frgReadImgNone.visibility = View.VISIBLE
+            bindingRead.frgReadTextNone.visibility = View.VISIBLE
+
+            dispView.visibility = View.GONE
         }
 
-        // 모드 변경용 버튼 동작 로직
-        bindingRead.btnChgmode.setOnClickListener {
-            startFrgWithTXT()
+        // 메뉴 버튼 클릭 이벤트 처리 로직
+        fltActBtn.setOnClickListener {
+            // 출력용 팝업 메뉴 생성
+            popRead = PopupMenu(requireContext(), fltActBtn)
+            popRead.menuInflater.inflate(R.menu.read_menu_list, popRead.menu)
+
+            // 팝업 메뉴 아이템 클릭 이벤트 처리
+            popRead.setOnMenuItemClickListener { ele ->
+                when (ele.itemId){
+                    // 1) 파일 불러오기 선택
+                    R.id.menu_loader -> {
+                        // 파일 열람용 메서드 동작
+                        openTXT()
+
+                        true
+                    }
+
+                    // 2) 모드 전환하기 선택
+                    R.id.menu_changer -> {
+                        // 모드 변경용 메서드 동작
+                        startFrgWithTXT()
+
+                        true
+                    }
+
+                    // 3) 그 외(예외처리)
+                    else -> false
+                }
+            }
+
+            // 팝업 메뉴 표시
+            popRead.show()
         }
+
+        Log.e("onViewCreated", "호출기 -1번")
     }
 
     // 호스트 액티비티의 onCreate() 동작 시 호출(1회)
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        Log.e("onActivityCreated", "호출기 0번")
     }
 
     // 프래그먼트 시각화 시 호출(1회)
     override fun onStart() {
         super.onStart()
+
+        Log.e("onStart", "호출기 1번")
     }
 
     // 프래그먼트 상태 업데이트 시 호출(반복)
     override fun onResume() {
         super.onResume()
+
+        Log.e("onResume", "호출기 2번")
     }
 
     // 프래그먼트 상태 일시중단 시 호출(반복)
     override fun onPause() {
         super.onPause()
+
+        Log.e("onPause", "호출기 3번")
     }
 
     // 프래그먼트 중단 시 호출(반복)
     override fun onStop() {
         super.onStop()
+
+        Log.e("onStop", "호출기 4번")
     }
 
     // 프래그먼트 뷰 제거 시 호출(1회)
     override fun onDestroyView() {
         super.onDestroyView()
+
+        Log.e("onDestroyView", "호출기 5번")
     }
 
     // 프래그먼트 제거 시 호출(1회)
     override fun onDestroy() {
         super.onDestroy()
+
+        Log.e("onDestroy", "호출기 6번")
     }
 
     // 프래그먼트 연결해제 시 호출(1회)
     override fun onDetach() {
         super.onDetach()
+
+        Log.e("onDetach", "호출기 7번")
     }
-
-
-    // 이하 파일 열람용 방법 2번
-    // MediaStore API 통제용 변수(modeType) 객체화
-    private val modeType : Int = 5
-
-    // TXT 파일 열람용 파일 탐색기 호출 코드
-    private fun fileOpener(){
-        val tgtFile: Intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply{
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "*/*"
-        }
-        startActivityForResult(tgtFile, modeType)
-    }
-
-    // 파일 탐색기 파일 선택 로직 코드
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if(requestCode == modeType && resultCode == Activity.RESULT_OK){
-            data?.data?.let{
-                    ele -> txtDisplayer(ele)
-            }
-        }
-    }
-
-    // TXT 파일 열람 로직 코드
-    private fun txtDisplayer(tgtUri_2: Uri){
-        // 파일을 읽어서 텍스트 뷰에 표시하는 로직
-        try{
-            val inputPrc_2: InputStream? = requireContext().contentResolver.openInputStream(tgtUri_2)
-            val reader_2: BufferedReader = BufferedReader(InputStreamReader(inputPrc_2))
-            val textBuilder_2: StringBuilder = StringBuilder()
-            var textLine_2: String?
-
-            while(reader_2.readLine().also{ textLine_2 = it } != null){
-                textBuilder_2.append(textLine_2).append("\n")
-            }
-            reader_2.close()
-
-            dispView.text = textBuilder_2.toString()
-        }
-        catch(e: Exception){
-            Log.e("FrgReadSrc", "파일 선택기 2번 동작 간 발생")
-            Toast.makeText(requireContext(), "텍스트 방법 2번 에러 발생",
-                Toast.LENGTH_SHORT).show()
-        }
-    }
-    // 이상 파일 열람용 방법 2번
-
 }

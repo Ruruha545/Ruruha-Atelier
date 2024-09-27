@@ -6,35 +6,72 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_loadfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/frg_read_btn_menu"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
         android:clickable="true"
+        android:scaleType="centerInside"
+        app:backgroundTint="@color/white"
+        app:elevation="12dp"
+        app:fabCustomSize="44dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_foreground" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_chgmode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo_eng" />
+        app:layout_constraintTop_toBottomOf="@id/frg_read_text_title"
+        app:srcCompat="@drawable/upside_menu_none" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/frg_read_text_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ellipsize="none"
-        android:gravity="top"
-        android:scrollbars="vertical"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="60dp"
+        android:background="#128AFA"
+        android:gravity="center_vertical"
+        android:paddingStart="20dp"
+        android:text=""
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/frg_read_text_main"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:ellipsize="none"
+        android:gravity="top"
+        android:padding="20dp"
+        android:scrollbars="vertical"
+        android:text=""
+        android:textSize="16sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/frg_read_text_title" />
+
+    <TextView
+        android:id="@+id/frg_read_text_none"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="선택된 파일이 없습니다"
+        android:textSize="24sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/frg_read_img_none"
+        app:layout_constraintStart_toStartOf="@+id/frg_read_img_none"
+        app:layout_constraintTop_toBottomOf="@+id/frg_read_img_none" />
+
+    <ImageView
+        android:id="@+id/frg_read_img_none"
+        android:layout_width="200dp"
+        android:layout_height="240dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/img_note" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

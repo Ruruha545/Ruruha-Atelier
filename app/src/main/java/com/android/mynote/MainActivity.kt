@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         // 뷰페이저 반응용 로직
         pagerAdapter.setClickListener(object: MenuSelecter.OnItemClickListener{
             override fun onItemClick(position: Int) {
-                // 프래그먼트 로드 시, 뷰페이저 숨기는 로직
+                // 프래그먼트 로드 시, 뷰페이저 시각화 해제
                 viewPager.visibility = ViewPager2.GONE
 
                 // 프래그먼트 로드
@@ -60,9 +60,16 @@ class MainActivity : AppCompatActivity() {
 
         // 프래그먼트 종료 후 복귀 시 리스너 동작 로직
         supportFragmentManager.addOnBackStackChangedListener {
-            // 백스택 제거 시 동작
+            // 프래그먼트 백스택 제거 시 동작
             if (supportFragmentManager.backStackEntryCount == 0) {
+                // 뷰페이저 UI 시각화 적용
                 viewPager.visibility = ViewPager2.VISIBLE
+
+                // 프래그먼트 종료 시, UI 시각화 해제
+                val oldFrg: Fragment? = supportFragmentManager.findFragmentById(R.id.container_fragment)
+                if(oldFrg != null){
+                    supportFragmentManager.beginTransaction().remove(oldFrg).commit()
+                }
             }
         }
 

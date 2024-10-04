@@ -79,4 +79,66 @@ interface FrgWriteInterface {
 //                Toast.LENGTH_SHORT).show()
 //        }
 //    }
+
+    //    // 이하 파일 작성용 코드(SAF 활용), 구버전
+//    // 1) 파일 저장용 다이얼로그 출력 메서드
+//    private fun dialToNameFile() {
+//        val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+//        builder.setTitle("신규 파일 생성")
+//
+//        // 입력용 에디트 뷰 생성--속성 정의
+//        val inputSpace: EditText = EditText(requireContext())
+//        inputSpace.hint = "신규 파일명을 입력해주세요"
+//        builder.setView(inputSpace)
+//
+//        // 다이얼로그 버튼 뷰 생성--속성 정의
+//        builder.setPositiveButton("저장하기") { dial: DialogInterface, _: Int ->
+//
+//            // 파일명 입력받는 로직
+//            val newName: String = inputSpace.text.toString()
+//
+//            if (newName.isNotEmpty()) {
+//                createTXT(newName)
+//            } else {
+//                Toast.makeText(
+//                    requireContext(), "파일명을 입력하세요",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+//
+//            dial.dismiss()
+//        }
+//
+//        builder.setNegativeButton("취소") { dial: DialogInterface, _: Int ->
+//            dial.cancel()
+//        }
+//
+//        builder.show()
+//    }
+//
+//    // 2) 신규 파일 생성용 메서드
+//    private fun createTXT(fileName: String) {
+//        val saveIntent: Intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+//            addCategory(Intent.CATEGORY_OPENABLE)
+//            type = "text/plain"
+//            putExtra(Intent.EXTRA_TITLE, "$fileName.txt")
+//        }
+//        createTXTLauncher.launch(saveIntent)
+//    }
+//
+//    // 3) 신규 파일 생성 동작용 액티비티 런쳐 객체화
+//    private val createTXTLauncher: ActivityResultLauncher<Intent> =
+//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+//            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+//                val tgtUri: Uri? = result.data?.data
+//                tgtUri?.let {
+//                    writeUri = it
+//                    saveTXT(it, dispView.text.toString())
+//                }
+//            } else {
+//                Toast.makeText(requireContext(), "파일 저장실패 상태", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    // 이상 파일 작성용 코드(SAF 활용)
+
 }

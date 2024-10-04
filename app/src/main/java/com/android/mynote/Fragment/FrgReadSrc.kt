@@ -8,7 +8,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.renderscript.ScriptGroup.Input
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,11 +19,8 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.android.mynote.R
 import com.android.mynote.databinding.FrgReadBinding
-import com.android.mynote.databinding.FrgWriteBinding
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.BufferedReader
 import java.io.InputStream
@@ -32,12 +28,11 @@ import java.io.InputStreamReader
 
 class FrgReadSrc : Fragment() {
 
-    // 뷰 바인딩용 객체 추가(소스 : frg_read.xml, frg_write.xml)
-    lateinit var bindingRead : FrgReadBinding
-    lateinit var bindingWrite : FrgWriteBinding
+    // 뷰 바인딩용 객체 추가(소스 : frg_read.xml)
+    private lateinit var bindingRead : FrgReadBinding
 
     // 호스트 액티비티의 컨텍스트를 상속받기 위한 객체 추가
-    lateinit var readContext: Context
+    private lateinit var readContext: Context
 
     // 프래그먼트 선택 TXT 파일의 Uri 정보 객체 추가
     private var readUri: Uri? = null
@@ -119,8 +114,8 @@ class FrgReadSrc : Fragment() {
 
         // 파일 출력 실패용 로직
         catch (e: Exception){
-            Log.e("FrgReadSrc", "readTXT 동작 간 에러 발생")
-            Toast.makeText(requireContext(), "readTXT 동작 간 에러 발생",
+            Log.e("readTXT 메서드", "예외처리 상황 발생")
+            Toast.makeText(requireContext(), "readTXT 동작 간 예외처리 발생",
                 Toast.LENGTH_SHORT).show()
         }
     }
@@ -139,7 +134,6 @@ class FrgReadSrc : Fragment() {
         // 프래그먼트 트랜잭션 작업 로직
         parentFragmentManager.beginTransaction()
             .replace(R.id.container_fragment, newFragment)
-            .addToBackStack(null)
             .commit()
     }
 
@@ -151,19 +145,14 @@ class FrgReadSrc : Fragment() {
         // 호스트 액티비티의 컨텍스트를 상속받는 로직
         readContext = context
 
-        Log.e("onAttach", "호출기 -4번")
+        Log.e("FrgReadSrc", "onAttach 부분(FrgReadSrc 1번)")
     }
 
     // 프래그먼트 생성 시 호출(1회)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // "Bundle"은 "키-값" 쌍으로 데이터를 저장하는 객체
-        // 프래그먼트의 상태를 저장하고, 복원하는데 사용됨
-        //
-        Log.e("onCreate", "호출기 -3번")
-
-
+        Log.e("FrgReadSrc", "onCreate 부분(FrgReadSrc 2번)")
     }
 
     // 프래그먼트 UI 생성 시 호출(1회)
@@ -187,7 +176,7 @@ class FrgReadSrc : Fragment() {
             readUri = it.getParcelable("txtbox")!!
         }
 
-        Log.e("onCreateView", "호출기 -2번")
+        Log.e("FrgReadSrc", "onCreateView 부분(FrgReadSrc 3번)")
 
         // 프래그먼트용 레이아웃 링크 로직
         return bindingRead.root
@@ -254,62 +243,62 @@ class FrgReadSrc : Fragment() {
             popRead.show()
         }
 
-        Log.e("onViewCreated", "호출기 -1번")
+        Log.e("FrgReadSrc", "onViewCreated 부분(FrgReadSrc 4번)")
     }
 
     // 호스트 액티비티의 onCreate() 동작 시 호출(1회)
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        Log.e("onActivityCreated", "호출기 0번")
+        Log.e("FrgReadSrc", "onActivityCreated 부분(FrgReadSrc 5번)")
     }
 
     // 프래그먼트 시각화 시 호출(1회)
     override fun onStart() {
         super.onStart()
 
-        Log.e("onStart", "호출기 1번")
+        Log.e("FrgReadSrc", "onStart 부분(FrgReadSrc 6번)")
     }
 
     // 프래그먼트 상태 업데이트 시 호출(반복)
     override fun onResume() {
         super.onResume()
 
-        Log.e("onResume", "호출기 2번")
+        Log.e("FrgReadSrc", "onResume 부분(FrgReadSrc 7번)")
     }
 
     // 프래그먼트 상태 일시중단 시 호출(반복)
     override fun onPause() {
         super.onPause()
 
-        Log.e("onPause", "호출기 3번")
+        Log.e("FrgReadSrc", "onPause 부분(FrgReadSrc 8번)")
     }
 
     // 프래그먼트 중단 시 호출(반복)
     override fun onStop() {
         super.onStop()
 
-        Log.e("onStop", "호출기 4번")
+        Log.e("FrgReadSrc", "onStop 부분(FrgReadSrc 9번)")
     }
 
     // 프래그먼트 뷰 제거 시 호출(1회)
     override fun onDestroyView() {
         super.onDestroyView()
 
-        Log.e("onDestroyView", "호출기 5번")
+        Log.e("FrgReadSrc", "onDestroyView 부분(FrgReadSrc 10번)")
     }
 
     // 프래그먼트 제거 시 호출(1회)
     override fun onDestroy() {
         super.onDestroy()
 
-        Log.e("onDestroy", "호출기 6번")
+        Log.e("FrgReadSrc", "onDestroy 부분(FrgReadSrc 11번)")
     }
 
     // 프래그먼트 연결해제 시 호출(1회)
     override fun onDetach() {
         super.onDetach()
 
-        Log.e("onDetach", "호출기 7번")
+        Log.e("FrgReadSrc", "onDetach 부분(FrgReadSrc 12번)")
     }
 }

@@ -1,10 +1,7 @@
 package com.android.mynote.Fragment
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.content.ContentResolver
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
@@ -17,17 +14,15 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.PopupMenu
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.android.mynote.R
-import com.android.mynote.databinding.FrgReadBinding
 import com.android.mynote.databinding.FrgWriteBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.BufferedReader
-import java.io.BufferedWriter
+import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
@@ -36,7 +31,7 @@ import java.io.OutputStreamWriter
 class FrgWriteSrc: Fragment() {
 
     // 뷰 바인딩용 객체 추가(소스 : frg_write.xml)
-    lateinit var bindingWrite : FrgWriteBinding
+    lateinit var bindingWrite: FrgWriteBinding
 
     // 호스트 액티비티의 컨텍스트를 상속받기 위한 객체 추가
     lateinit var writeContext: Context
@@ -45,19 +40,22 @@ class FrgWriteSrc: Fragment() {
     private var writeUri: Uri? = null
 
     // 출력용 텍스트 뷰 객체화(지연)
-    private lateinit var dispView : EditText
+    private lateinit var dispView: EditText
 
     // 팝업 메뉴 객체화(지연)
     private lateinit var fltActBtn: FloatingActionButton
-    private lateinit var popWrite : PopupMenu
+    private lateinit var popWrite: PopupMenu
 
     // 에디트 뷰에 전시할 텍스트 지연 객체 추가
     private lateinit var reText: String
 
+    // 신규 파일 저장용 코드
+    private val createCode: Int = 1
+
     // 이하 파일 로드용 코드(SAF 활용)
     // 1) 파일 선택용 메서드
-    private fun openTXT(){
-        val intentRead: Intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply{
+    private fun openTXT() {
+        val intentRead: Intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "text/plain"
         }
@@ -66,97 +64,87 @@ class FrgWriteSrc: Fragment() {
 
     // 2) 파일 선택 동작용 액티비티 런쳐 객체화
     private val loadTXTLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-                result ->
-            if(result.resultCode == Activity.RESULT_OK && result.data != null){
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
                 val tgtUri: Uri? = result.data?.data
-                tgtUri?.let{
+                tgtUri?.let {
                     writeUri = it
                     readTXT(it)
                 }
-            }
-            else{
+            } else {
                 Toast.makeText(requireContext(), "파일 미선택 상태", Toast.LENGTH_SHORT).show()
             }
         }
     // 이상 파일 로드용 코드(SAF 활용)
 
-    // 이하 파일 작성용 코드(SAF 활용)
-    // 1) 파일 저장용 다이얼로그 출력 메서드
-    private fun dialToNameFile(){
-        val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("신규 파일 생성")
-
-        // 입력용 에디트 뷰 생성--속성 정의
-        val inputSpace: EditText = EditText(requireContext())
-        inputSpace.hint = "신규 파일명을 입력해주세요"
-        builder.setView(inputSpace)
-
-        // 다이얼로그 버튼 뷰 생성--속성 정의
-        builder.setPositiveButton("저장하기"){
-                dial: DialogInterface, _: Int ->
-
-            // 파일명 입력받는 로직
-            val newName: String = inputSpace.text.toString()
-
-            if(newName.isNotEmpty()){
-                createTXT(newName)
+    // 이하 파일 작성용 코드(SAF 활용), 신버전
+    // 1) 신규 컨텐츠 생성용 메서드
+    private fun writeTXT(tgtUri: Uri, contents: String) {
+        try {
+            requireContext().contentResolver.openOutputStream(tgtUri)?.use { outputStream ->
+                val writer: OutputStreamWriter = OutputStreamWriter(
+                    outputStream,
+                    "UTF-8"
+                )
+                writer.write(contents)
+                writer.flush()
             }
-            else{
-                Toast.makeText(requireContext(), "파일명을 입력하세요",
-                    Toast.LENGTH_SHORT).show()
-            }
-
-            dial.dismiss()
         }
+        // 예외처리(파일 쓰기 한정)
+        catch (e: IOException) {
+            e.printStackTrace()
 
-        builder.setNegativeButton("취소"){
-                dial: DialogInterface, _: Int ->
-            dial.cancel()
+            Toast.makeText(
+                requireContext(), "신규 파일 내용 저장 실패",
+                Toast.LENGTH_SHORT
+            ).show()
         }
-
-        builder.show()
     }
 
-    // 2) 신규 파일 생성용 메서드
-    private fun createTXT(fileName: String){
-        val saveIntent: Intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply{
+    // 2) 신규 파일 생성용 메서드(파일 이름, 위치 지정)
+    private fun createTXT() {
+        val saveIntent: Intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "text/plain"
-            putExtra(Intent.EXTRA_TITLE, "$fileName.txt")
+            putExtra(Intent.EXTRA_TITLE, "TESTTEST.txt")
         }
-        createTXTLauncher.launch(saveIntent)
+        startActivityForResult(saveIntent, createCode)
     }
 
-    // 3) 신규 파일 생성 동작용 액티비티 런쳐 객체화
-    private val createTXTLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-            result ->
-            if(result.resultCode == Activity.RESULT_OK && result.data != null){
-                val tgtUri: Uri? = result.data?.data
-                tgtUri?.let{
-                    writeUri = it
-                    saveTXT(it, dispView.text.toString())
-                }
-            }
-            else{
-                Toast.makeText(requireContext(), "파일 저장실패 상태", Toast.LENGTH_SHORT).show()
+    // 3) 신규 파일
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == createCode && resultCode == Activity.RESULT_OK){
+            data?.data?.let{
+                uri ->
+                // 에디트 뷰의 텍스트를 URI에 저장하는 로직
+                val saveText: String = bindingWrite.frgWriteEditMain.text.toString()
+                writeTXT(uri, saveText)
+
+                // 생성된 Uri 갱신
+                writeUri = uri
+
+                // UI 갱신: 파일명과 텍스트 반영
+                bindingWrite.frgWriteTextTitle.text = getTXTName(uri)
+                bindingWrite.frgWriteEditMain.setText(saveText)
             }
         }
+    }
     // 이상 파일 작성용 코드(SAF 활용)
 
     // 파일명 추출 메서드
-    private fun getTXTName(tgtUri: Uri): String?{
+    private fun getTXTName(tgtUri: Uri): String? {
         // 반환값(파일명), 추적자 정의
         var fileName: String? = null
         val pointer: Cursor? = requireContext().contentResolver
             .query(tgtUri, null, null, null, null)
 
         // 추적자 동작
-        pointer?.use{
-            if(it.moveToFirst()){
+        pointer?.use {
+            if (it.moveToFirst()) {
                 val nameId: Int = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if(nameId >= 0){
+                if (nameId >= 0) {
                     fileName = it.getString(nameId)
                 }
             }
@@ -166,12 +154,12 @@ class FrgWriteSrc: Fragment() {
     }
 
     // 파일 출력용 메서드
-    private fun readTXT(tgtUri: Uri){
+    private fun readTXT(tgtUri: Uri) {
         // 파일 출력 성공용 로직
-        try{
+        try {
             val newStream: InputStream? = requireContext().contentResolver.openInputStream(tgtUri)
             val readBuf: BufferedReader = BufferedReader(InputStreamReader(newStream))
-            val cargoText: String = readBuf.use{ it.readText() }
+            val cargoText: String = readBuf.use { it.readText() }
 
             // 읽어온 텍스트 파일, 파일명 화면 전시
             dispView = bindingWrite.frgWriteEditMain
@@ -183,38 +171,43 @@ class FrgWriteSrc: Fragment() {
         }
 
         // 파일 출력 실패용 로직
-        catch (e: Exception){
+        catch (e: Exception) {
             Log.e("FrgWriteSrc", "readTXT 동작 간 에러 발생")
-            Toast.makeText(requireContext(), "readTXT 동작 간 에러 발생",
-                Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(), "readTXT 동작 간 에러 발생",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
     // 파일 저장용 메서드
-    private fun saveTXT(tgtUri: Uri, contents: String){
+    private fun saveTXT(tgtUri: Uri, contents: String) {
         // 저장 성공용 로직
-        try{
+        try {
             val newStream: OutputStream? = requireContext().contentResolver.openOutputStream(tgtUri)
             val writeOut: OutputStreamWriter = OutputStreamWriter(newStream)
 
-            writeOut.use{ it.write(contents) }
+            writeOut.use { it.write(contents) }
 
-            Toast.makeText(requireContext(), "saveTXT 동작 성공, 파일 저장 완료",
-                Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(), "saveTXT 동작 성공, 파일 저장 완료",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
         // 저장 실패용 로직
-        catch(e: Exception){
+        catch (e: Exception) {
             Log.e("FrgWriteSrc", "saveTXT 동작 간 에러 발생")
-            Toast.makeText(requireContext(), "saveTXT 동작 간 에러 발생",
-                Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(), "saveTXT 동작 간 에러 발생",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
 
-
     // 열람용 프래그먼트 호출 및 데이터 전달용 코드
-    private fun startFrgWithTXT(){
+    private fun startFrgWithTXT() {
 
         // 상태 전달용 번들 객체화
         val passbundle: Bundle = Bundle()
@@ -227,7 +220,6 @@ class FrgWriteSrc: Fragment() {
         // 프래그먼트 트랜잭션 작업 로직
         parentFragmentManager.beginTransaction()
             .replace(R.id.container_fragment, newFragment)
-            .addToBackStack(null)
             .commit()
     }
 
@@ -237,15 +229,15 @@ class FrgWriteSrc: Fragment() {
 
         // 호스트 액티비티의 컨텍스트를 상속받는 로직
         writeContext = context
+
+        Log.e("FrgWriteSrc", "onAttach 부분(FrgWriteSrc 1번)")
     }
 
     // 프래그먼트 생성 시 호출(1회)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // "Bundle"은 "키-값" 쌍으로 데이터를 저장하는 객체
-        // 프래그먼트의 상태를 저장하고, 복원하는데 사용됨
-        //
+        Log.e("FrgWriteSrc", "onCreate 부분(FrgWriteSrc 2번)")
     }
 
     // 프래그먼트 UI 생성 시 호출(1회)
@@ -264,15 +256,21 @@ class FrgWriteSrc: Fragment() {
         // 전시용 에디트 뷰 객체화 로직
         dispView = bindingWrite.frgWriteEditMain
 
-        // 수신한 번들 객체화
-        arguments?.let{
-            writeUri = it.getParcelable("txtbox")!!
+        // 모드 전환에 따른 동작 로직
+        arguments?.let { bundle ->
+            writeUri = bundle.getParcelable("txtbox")
+
+            writeUri?.let { uri ->
+                readTXT(uri)
+            }
         }
 
-        // 텍스트 전시 로직
-        writeUri?.let{
-            Uri -> readTXT(Uri)
-        }
+        // 수신한 번들이 없을 경우 동작로직
+            ?: run {
+                Log.d("onCreateView", "수신한 번들이 없음")
+            }
+
+        Log.e("FrgWriteSrc", "onCreateView 부분(FrgWriteSrc 3번)")
 
         // 프래그먼트용 레이아웃 링크 로직
         return bindingWrite.root
@@ -298,11 +296,10 @@ class FrgWriteSrc: Fragment() {
 
 
         // 번들 수신여부에 따른 이벤트 처리 로직
-        if(writeUri != null){
+        if (writeUri != null) {
             // 기존파일 작성용 메서드 동작
             readTXT(writeUri!!)
-        }
-        else{
+        } else {
             // 수신한 번들이 없을 경우 미동작
         }
 
@@ -314,7 +311,7 @@ class FrgWriteSrc: Fragment() {
 
             // 팝업 메뉴 아이템 클릭 이벤트 처리
             popWrite.setOnMenuItemClickListener { ele ->
-                when (ele.itemId){
+                when (ele.itemId) {
                     // 1) 파일 불러오기 선택
                     R.id.menu_loader -> {
                         // 파일 열람용 메서드 동작
@@ -326,14 +323,14 @@ class FrgWriteSrc: Fragment() {
                     // 2) 파일 저장하기 선택
                     R.id.menu_saver -> {
                         // a) 신규 파일 저장하기
-                        if(writeUri == null){
+                        if (writeUri == null) {
                             // 신규파일 작성용 메서드 동작
-                            dialToNameFile()
+                            createTXT()
                         }
                         // b) 수정한 파일 저장하기
-                        else{
+                        else {
                             // Uri 최신화, 파일 저장용 메서드 동작
-                            writeUri?.let{ Uri ->
+                            writeUri?.let { Uri ->
                                 saveTXT(Uri, bindingWrite.frgWriteEditMain.text.toString())
                             }
                         }
@@ -360,16 +357,22 @@ class FrgWriteSrc: Fragment() {
             // 팝업 메뉴 표시
             popWrite.show()
         }
+
+        Log.e("FrgWriteSrc", "onViewCreated 부분(FrgWriteSrc 4번)")
     }
 
     // 호스트 액티비티의 onCreate() 동작 시 호출(1회)
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        Log.e("FrgWriteSrc", "onActivityCreated 부분(FrgWriteSrc 5번)")
     }
 
     // 프래그먼트 시각화 시 호출(1회)
     override fun onStart() {
         super.onStart()
+
+        Log.e("FrgWriteSrc", "onStart 부분(FrgWriteSrc 6번)")
     }
 
     // 프래그먼트 상태 업데이트 시 호출(반복)
@@ -389,30 +392,42 @@ class FrgWriteSrc: Fragment() {
             .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         keyboard.showSoftInput(bindingWrite.frgWriteEditMain, InputMethodManager.SHOW_IMPLICIT)
+
+        Log.e("FrgWriteSrc", "onResume 부분(FrgWriteSrc 7번)")
     }
 
     // 프래그먼트 상태 일시중단 시 호출(반복)
     override fun onPause() {
         super.onPause()
+
+        Log.e("FrgWriteSrc", "onPause 부분(FrgWriteSrc 8번)")
     }
 
     // 프래그먼트 중단 시 호출(반복)
     override fun onStop() {
         super.onStop()
+
+        Log.e("FrgWriteSrc", "onStop 부분(FrgWriteSrc 9번)")
     }
 
     // 프래그먼트 뷰 제거 시 호출(1회)
     override fun onDestroyView() {
         super.onDestroyView()
+
+        Log.e("FrgWriteSrc", "onDestroyView 부분(FrgWriteSrc 10번)")
     }
 
     // 프래그먼트 제거 시 호출(1회)
     override fun onDestroy() {
         super.onDestroy()
+
+        Log.e("FrgWriteSrc", "onDestroy 부분(FrgWriteSrc 11번)")
     }
 
     // 프래그먼트 연결해제 시 호출(1회)
     override fun onDetach() {
         super.onDetach()
+
+        Log.e("FrgWriteSrc", "onDetach 부분(FrgWriteSrc 12번)")
     }
 }
